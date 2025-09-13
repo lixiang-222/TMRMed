@@ -1,16 +1,16 @@
-# 🌿 DC-TCM
+# 🌿 TCM
 
 
 *This paper is still **under review**, and more information (e.g., raw datasets) will be released after publication.*
 
 <p align="center">
-  <img src="innovation.svg" alt="DC-TCM Innovation" width="600"/>
+  <img src="innovation.svg" alt="TCM Innovation" width="600"/>
 </p>
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org)
 
-The official implementation of DC-TCM for Traditional Chinese Medicine diagnosis and treatment tasks, including **syndrome differentiation** and **prescription recommendation**.
+The official implementation of TCM for Traditional Chinese Medicine diagnosis and treatment tasks, including **syndrome differentiation** and **prescription recommendation**.
 
 ## 📁 1. Folder Specification
 
@@ -74,4 +74,4 @@ python main.py --model_name Ours --dataset tcm_lung --embedding_dim 64 --num_epo
 
 ## 🤝 Contribution
 
-We welcome contributions to improve DC-TCM! Please feel free to submit issues or pull requests.
+We welcome contributions to improve TCM! Please feel free to submit issues or pull requests.
