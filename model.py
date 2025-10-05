@@ -285,15 +285,22 @@ class Ours(nn.Module):
             # 构建图并传播消息
             adj, all_nodes = build_graph(curr_x, curr_y1, curr_y2, curr_y3)
             gcn_output = self.x_y1_gcn(all_nodes, adj)
+
+            # 更新特征表示，并添加残差连接
             
-            # 更新特征表示
-            new_x_list.append(gcn_output[0])  # x节点输出
+            # x 节点的原始输入是 curr_x.squeeze(0)，GNN 输出是 gcn_output[0]
+            new_x_list.append(curr_x.squeeze(0) + gcn_output[0])
+            
             if visit_idx < len(y1_list):
-                new_y1_list.append(gcn_output[1])
+                # y1 节点的原始输入是 curr_y1.squeeze(0)，GNN 输出是 gcn_output[1]
+                new_y1_list.append(curr_y1.squeeze(0) + gcn_output[1])
             if visit_idx < len(y2_list):
-                new_y2_list.append(gcn_output[2])
+                # y2 节点的原始输入是 curr_y2.squeeze(0)，GNN 输出是 gcn_output[2]
+                new_y2_list.append(curr_y2.squeeze(0) + gcn_output[2])
             if visit_idx < len(y3_list):
-                new_y3_list.append(gcn_output[3])
+                # y3 节点的原始输入是 curr_y3.squeeze(0)，GNN 输出是 gcn_output[3]
+                new_y3_list.append(curr_y3.squeeze(0) + gcn_output[3])
+
         # 保留最后一次就诊的x特征(不保留y特征)
         new_x_list.append(x_list[-1])
         
@@ -383,25 +390,32 @@ class Ours(nn.Module):
 
         # ----- #6.残差对比学习 -----
         if len(patient) > 1:
-            # y1_last = self.decoder1(torch.cat([repr_x0, repr_x1, repr_y1_history]))
-            # y2_last = self.decoder2(torch.cat([repr_x0, repr_x2, repr_y1, repr_y2_history]))
+            y1_last = self.decoder1(torch.cat([repr_x0, repr_x1, repr_y1_history]))
+            y2_last = self.decoder2(torch.cat([repr_x0, repr_x2, repr_y1, repr_y2_history]))
             y3_last = self.decoder3(torch.cat([repr_x0, repr_x3, repr_y1, repr_y2, repr_y3_history]))
             
-            # y1_list.append(output1)
-            # y2_list.append(output2)
+            y1_list.append(y1_last)
+            y2_list.append(y2_last)
             y3_list.append(y3_last)
 
             min_len = len(patient) - 1
             
             # 计算每种类型的残差，shape: (min_len, embedding_dim)
             x_residuals = torch.stack([self.residual_x(x_list[i+1] - x_list[i]) for i in range(min_len)], dim=0)
-            # y1_residuals = torch.stack([self.residual_y1(y1_list[i+1] - y1_list[i]) for i in range(min_len)], dim=0)
-            # y2_residuals = torch.stack([self.residual_y2(y2_list[i+1] - y2_list[i]) for i in range(min_len)], dim=0)
+            y1_residuals  = torch.stack([self.residual_y1(y1_list[i+1] - y1_list[i]) for i in range(min_len)], dim=0)
+            y2_residuals = torch.stack([self.residual_y2(y2_list[i+1] - y2_list[i]) for i in range(min_len)], dim=0)
             y3_residuals = torch.stack([self.residual_y3(y3_list[i+1] - y3_list[i]) for i in range(min_len)], dim=0)
 
+            loss_x_y1 = (1 - F.cosine_similarity(x_residuals, y1_residuals, dim=-1)).mean()
+            loss_x_y2 = (1 - F.cosine_similarity(x_residuals, y2_residuals, dim=-1)).mean()
+            loss_x_y3 = (1 - F.cosine_similarity(x_residuals, y3_residuals, dim=-1)).mean()
+            
+            loss_y1_y2 = (1 - F.cosine_similarity(y1_residuals, y2_residuals, dim=-1)).mean()
+            loss_y1_y3 = (1 - F.cosine_similarity(y1_residuals, y3_residuals, dim=-1)).mean()
+            
+            loss_y2_y3 = (1 - F.cosine_similarity(y2_residuals, y3_residuals, dim=-1)).mean()
 
-            contrastive_loss = 1 - F.cosine_similarity(x_residuals,  y3_residuals, dim=-1)
-            contrastive_loss = contrastive_loss.mean()
+            contrastive_loss = loss_x_y1 + loss_x_y2 + loss_x_y3 + loss_y1_y2 + loss_y1_y3 + loss_y2_y3
         else:
             contrastive_loss = torch.tensor(0.0, dtype=torch.float, device=self.device)
         # 最终预测
