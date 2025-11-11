@@ -1,11 +1,8 @@
-# 🌿 TCM
+# 🌿 TMRMed
 
 
 *This paper is still **under review**, and more information (e.g., raw datasets) will be released after publication.*
 
-<p align="center">
-  <img src="innovation.svg" alt="TCM Innovation" width="600"/>
-</p>
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org)
