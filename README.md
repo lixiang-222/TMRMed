@@ -7,13 +7,12 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org)
 
-The official implementation of TCM for Traditional Chinese Medicine diagnosis and treatment tasks, including **syndrome differentiation** and **prescription recommendation**.
 
 ## 📁 1. Folder Specification
 
-- `raw_data/`: TCM clinical datasets
-  - `data.csv`: Standard TCM clinical data (symptoms, syndromes, prescriptions)
-  - `TCM_Lung.xlsx`: Lung cancer TCM dataset
+- `raw_data/`: clinical datasets
+  - `data.csv`: Standard clinical data (symptoms, syndromes, prescriptions)
+  - `TCM_Lung.xlsx`: Lung cancer dataset
 
 - `processed_data/`: Preprocessed data files
   - `processed_data_discrete.pkl`: Discrete data (non-sequential)
@@ -25,7 +24,7 @@ The official implementation of TCM for Traditional Chinese Medicine diagnosis an
   - `SimpleMLP`: Baseline MLP model
 
 - `main.py`: Training and evaluation script
-- `preprocess.py`: Data preprocessing for standard TCM data
+- `preprocess.py`: Data preprocessing for standard data
 - `preprocess_tcm_lung.py`: Data preprocessing for lung cancer data
 - `train.py`: Model training utilities
 - `utils.py`: Evaluation metrics and visualization
@@ -71,4 +70,4 @@ python main.py --model_name Ours --dataset tcm_lung --embedding_dim 64 --num_epo
 
 ## 🤝 Contribution
 
-We welcome contributions to improve TCM! Please feel free to submit issues or pull requests.
+We welcome contributions to improve TMRMed! Please feel free to submit issues or pull requests.
